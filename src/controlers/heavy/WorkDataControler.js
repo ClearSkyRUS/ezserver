@@ -14,7 +14,6 @@ class WorkDataControler {
 		ProgramModel.find().exec(function(err, Programs) {
 			if (err) throw err;
 
-			if (Programs.length === 0)
 
 			OrderModel.find().exec(function(err, Orders) {
 				if (err) throw err;
@@ -26,7 +25,7 @@ class WorkDataControler {
 					var diff = data - start;
 					var oneDay = 1000 * 60 * 60 * 24;
 					var day = Math.floor(diff / oneDay);
-					var today = (day + 1) % Days.length;
+					var today = (day) % Days.length;
 
 					if (i === 0)
 						tomorow = today;

@@ -9,8 +9,13 @@ class WorkDataControler {
 	index(req, res) {
 		var OrdersTomorrow = [];
 		const dayCount = req.params.count;
+	DayModel.find().exec(function(err, Days) {
+
 		ProgramModel.find().exec(function(err, Programs) {
 			if (err) throw err;
+
+			if (Programs.length === 0)
+
 			OrderModel.find().exec(function(err, Orders) {
 				if (err) throw err;
 				var data =  new Date();
@@ -21,7 +26,7 @@ class WorkDataControler {
 					var diff = data - start;
 					var oneDay = 1000 * 60 * 60 * 24;
 					var day = Math.floor(diff / oneDay);
-					var today = (day + 1) % Programs[0].options[0].days.length;
+					var today = (day + 1) % Days.length;
 
 					if (i === 0)
 						tomorow = today;
@@ -106,8 +111,6 @@ class WorkDataControler {
 								}
 							}
 							buyList.totalPrice = buyList.products.reduce((price, product) => price + product.price, 0);
-							DayModel.find().exec(function(err, Days) {
-
 								var jsonToClient = {
 									DishsToCook: DishsObjects,
 									BuyList: buyList,

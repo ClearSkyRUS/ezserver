@@ -1,4 +1,4 @@
-import ClientModel from '../../models/basic/Client';
+import ClientModel from '../../models/basic/client';
 
 class ClientControler {
 

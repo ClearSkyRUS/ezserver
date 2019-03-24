@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Client = require("../../models/basic/Client");
+var _client = require("../../models/basic/client");
 
-var _Client2 = _interopRequireDefault(_Client);
+var _client2 = _interopRequireDefault(_client);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22,7 +22,7 @@ var ClientControler = function () {
 	_createClass(ClientControler, [{
 		key: "index",
 		value: function index(req, res) {
-			_Client2.default.find().then(function (err, Clients) {
+			_client2.default.find().then(function (err, Clients) {
 				if (err) return res.send(err);
 				res.json(Clients);
 			});
@@ -32,7 +32,7 @@ var ClientControler = function () {
 		value: function create(req, res) {
 			var data = req.body;
 
-			var Client = new _Client2.default({
+			var Client = new _client2.default({
 				"name": data.name,
 				"type": data.type,
 				"tel": data.tel,
@@ -56,7 +56,7 @@ var ClientControler = function () {
 			var data = req.body;
 			if (data.type === 'Другой') data.type = data.otherType;
 
-			_Client2.default.findByIdAndUpdate(req.params.id, { $set: data }, function (err) {
+			_client2.default.findByIdAndUpdate(req.params.id, { $set: data }, function (err) {
 				if (err) return res.send(err);
 				res.json({ status: "updated" });
 			});
@@ -64,7 +64,7 @@ var ClientControler = function () {
 	}, {
 		key: "delete",
 		value: function _delete(req, res) {
-			_Client2.default.remove({ _id: req.params.id }).then(function (Client) {
+			_client2.default.remove({ _id: req.params.id }).then(function (Client) {
 				if (Client) return res.json({ status: "deleted" });
 
 				res.json({ status: "error" });

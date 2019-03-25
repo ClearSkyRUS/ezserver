@@ -3,14 +3,6 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
-var http = require('http');
-var https = require('https');
-var fs = require('fs');
-var options = {
-  key: fs.readFileSync('../../privatekey.pem'),
-  cert: fs.readFileSync('../../server.crt')
-};
-
 import ProductControler from './controlers/basic/ProductControler';
 const Product = new ProductControler();
 
@@ -74,10 +66,8 @@ app.delete('/API/clients/:id', Client.delete);
 
 app.get('/API/workdata/:count', WorkData.index);
 
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(options, app);
+app.listen(3333, () => {
+	console.log('SERVER STARTED!');
+});
 
-httpServer.listen(3333);
-httpsServer.listen(443);
 
-console.log('SERVER STARTED!');

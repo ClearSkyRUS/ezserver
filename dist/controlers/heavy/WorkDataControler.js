@@ -59,7 +59,7 @@ var WorkDataControler = function () {
 							var diff = data - start;
 							var oneDay = 1000 * 60 * 60 * 24;
 							var day = Math.floor(diff / oneDay);
-							var today = day % Days.length;
+							var today = (day + 1) % Days.length;
 
 							if (i === 0) tomorow = today;
 
@@ -273,7 +273,7 @@ var WorkDataControler = function () {
 							for (var _iterator5 = dishsToCook[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
 								var dishToCook = _step5.value;
 
-								dishToCook.gram = dishToCook.gram * 1.1;
+								dishToCook.gram = dishToCook.gram * 1.05;
 							}
 						} catch (err) {
 							_didIteratorError5 = true;
@@ -377,13 +377,12 @@ var WorkDataControler = function () {
 													}).ganes / 100);
 													productObj.gram = grammNeed;
 												} else {
-													grammNeed = productObj.gram + (productObj.gram + productObj.gram * Products.find(function (x) {
-														return x._id.toString() === productObj.id;
-													}).hot / 100 * productObj.hot) * Products.find(function (x) {
-														return x._id.toString() === productObj.id;
-													}).cold / 100 * productObj.cold + productObj.gram * Products.find(function (x) {
+													if (productObj.hot) productObj.gram = productObj.gram + productObj.gram * Products.find(function (x) {
 														return x._id.toString() === productObj.id;
 													}).hot / 100 * productObj.hot;
+													grammNeed = productObj.gram + productObj.gram * (Products.find(function (x) {
+														return x._id.toString() === productObj.id;
+													}).cold / 100) * productObj.cold;
 												}
 												if (buyList.products.find(function (x) {
 													return x.id === productObj.id;

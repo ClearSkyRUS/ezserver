@@ -25,7 +25,7 @@ class WorkDataControler {
 					var diff = data - start;
 					var oneDay = 1000 * 60 * 60 * 24;
 					var day = Math.floor(diff / oneDay);
-					var today = (day) % Days.length;
+					var today = (day+1) % Days.length;
 
 					if (i === 0)
 						tomorow = today;
@@ -71,7 +71,7 @@ class WorkDataControler {
 					}
 
 					for (var dishToCook of dishsToCook) {
-						dishToCook.gram = dishToCook.gram * 1.1
+						dishToCook.gram = dishToCook.gram * 1.05
 					}
 
 					var DishsObjects = []
@@ -97,9 +97,9 @@ class WorkDataControler {
 		                            grammNeed = productObj.gram/(Products.find(x => x._id.toString() === productObj.id ).ganes/100)
 		                            productObj.gram = grammNeed
 		                        	} else {
-		                            grammNeed = productObj.gram
-		                            + (productObj.gram+ productObj.gram * Products.find(x => x._id.toString() === productObj.id ).hot/100 * productObj.hot) * Products.find(x => x._id.toString() === productObj.id ).cold/100 * productObj.cold
-		                            + productObj.gram * Products.find(x => x._id.toString() === productObj.id ).hot/100 * productObj.hot
+		                        	if (productObj.hot)
+		                        		productObj.gram = productObj.gram + productObj.gram * Products.find(x => x._id.toString() === productObj.id ).hot/100 * productObj.hot
+		                            grammNeed = productObj.gram + ((productObj.gram * (Products.find(x => x._id.toString() === productObj.id ).cold/100)) * productObj.cold)
 		                        	}
 		                			if (buyList.products.find(x => x.id === productObj.id)) {
 		                				buyList.products.find(x => x.id === productObj.id).gramneed += grammNeed

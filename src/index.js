@@ -7,8 +7,8 @@ import bodyParser from 'body-parser';
 var https = require('https');
 var fs = require('fs');
 var options = {
-  key: fs.readFileSync('./privatekey.pem'),
-  cert: fs.readFileSync('./server.crt')
+  key: fs.readFileSync('../../privatekey.pem'),
+  cert: fs.readFileSync('../../server.crt')
 };
 
 import ProductControler from './controlers/basic/ProductControler';

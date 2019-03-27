@@ -25,7 +25,7 @@ class WorkDataControler {
 					var diff = data - start;
 					var oneDay = 1000 * 60 * 60 * 24;
 					var day = Math.floor(diff / oneDay);
-					var today = (day+1) % Days.length;
+					var today = (day+10) % Days.length;
 
 					if (i === 0)
 						tomorow = today;

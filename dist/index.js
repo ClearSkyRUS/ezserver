@@ -46,13 +46,6 @@ var _WorkDataControler2 = _interopRequireDefault(_WorkDataControler);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var https = require('https');
-var fs = require('fs');
-var options = {
-  key: fs.readFileSync('./privatekey.pem'),
-  cert: fs.readFileSync('./server.crt')
-};
-
 var Product = new _ProductControler2.default();
 
 var Dish = new _DIshControler2.default();
@@ -71,8 +64,8 @@ var app = (0, _express2.default)();
 
 _mongoose2.default.connect('mongodb://localhost/ezserver');
 
-app.use(_bodyParser2.default.urlencoded({ extended: true }));
-app.use(_bodyParser2.default.json());
+app.use(_bodyParser2.default.urlencoded({ extended: true }, { limit: '50mb' }));
+app.use(_bodyParser2.default.json({ limit: '50mb' }));
 
 app.use((0, _cors2.default)());
 
@@ -108,10 +101,6 @@ app.delete('/API/clients/:id', Client.delete);
 
 app.get('/API/workdata/:count', WorkData.index);
 
-var httpServer = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
-
-httpServer.listen(3333);
-httpsServer.listen(443);
-
-console.log('SERVER STARTED!');
+app.listen(3333, function () {
+	console.log('SERVER STARTED!');
+});

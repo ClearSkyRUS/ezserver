@@ -30,7 +30,7 @@ mongoose.connect('mongodb://localhost/ezserver');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+app.use(express.bodyParser({limit: '50mb'}));
 
 app.use(cors())
 

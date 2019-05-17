@@ -23,7 +23,9 @@ var ProductControler = function () {
 		key: 'index',
 		value: function index(req, res) {
 			_product2.default.find().then(function (err, products) {
+
 				if (err) return res.send(err);
+
 				res.json(products);
 			});
 		}
@@ -42,10 +44,7 @@ var ProductControler = function () {
 				"price": data.price,
 				"cold": data.cold,
 				"hot": data.hot,
-				"ganes": data.ganes,
-				"key": data.title,
-				"value": data.title,
-				"text": data.title
+				"ganes": data.ganes
 			});
 
 			product.save().then(function () {

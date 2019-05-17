@@ -10,6 +10,22 @@ var _dish = require('../../models/basic/dish');
 
 var _dish2 = _interopRequireDefault(_dish);
 
+var _dishType = require('../../models/basic/dishType');
+
+var _dishType2 = _interopRequireDefault(_dishType);
+
+var _product = require('../../models/basic/product');
+
+var _product2 = _interopRequireDefault(_product);
+
+var _getKeys = require('../../helpers/getKeys');
+
+var _getKeys2 = _interopRequireDefault(_getKeys);
+
+var _getDishsParams = require('../../helpers/getDishsParams');
+
+var _getDishsParams2 = _interopRequireDefault(_getDishsParams);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22,9 +38,23 @@ var DishControler = function () {
 	_createClass(DishControler, [{
 		key: 'index',
 		value: function index(req, res) {
-			_dish2.default.find().then(function (err, dishs) {
+			_dish2.default.find().populate('type productslist.product').exec(function (err, dishs) {
 				if (err) return res.send(err);
-				res.json(dishs);
+				var dishsObj = (0, _getDishsParams2.default)(dishs);
+				_dishType2.default.find().exec(function (err, dishTypes) {
+					if (err) return res.send(err);
+
+					_product2.default.find().exec(function (err, products) {
+						if (err) return res.send(err);
+						var productsObj = (0, _getKeys2.default)(products, 'title');
+						var response = {
+							types: dishTypes,
+							dishs: dishsObj,
+							products: productsObj
+						};
+						res.json(response);
+					});
+				});
 			});
 		}
 	}, {
@@ -35,6 +65,7 @@ var DishControler = function () {
 
 			var dish = new _dish2.default({
 				"title": data.title,
+				"tehMap": data.tehMap,
 				"type": data.type,
 				"image": data.image,
 				"gramms": data.gramms,
@@ -43,9 +74,6 @@ var DishControler = function () {
 				"fat": data.fat,
 				"carb": data.carb,
 				"price": data.price,
-				"key": data.title,
-				"value": data.title,
-				"text": data.title,
 				"productslist": data.productslist
 			});
 

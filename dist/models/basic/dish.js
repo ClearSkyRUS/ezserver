@@ -12,18 +12,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var DishSchema = new _mongoose.Schema({
 	"title": String,
-	"type": String,
+	"tehMap": String,
+	"type": { type: _mongoose.Schema.Types.ObjectId, ref: 'DishType' },
 	"image": String,
 	"gramms": Number,
-	"cal": Number,
-	"prot": Number,
-	"fat": Number,
-	"carb": Number,
-	"price": Number,
-	"key": String,
-	"value": String,
-	"text": String,
-	"productslist": { type: Array, "default": [] }
+	"productslist": [{
+		"id": String,
+		"product": { type: _mongoose.Schema.Types.ObjectId, ref: 'Product' },
+		"gramm": Number,
+		"cold": Boolean,
+		"hot": Boolean,
+		"ganes": Boolean
+	}]
 });
 
 var Dish = _mongoose2.default.model('Dish', DishSchema);

@@ -4,15 +4,21 @@ import mongoose, { Schema } from 'mongoose';
 
 const OrderSchema = new Schema(
 	{
-		"client": String,
+		"client": { type: Schema.Types.ObjectId, ref: 'Client' },
 		"date": String,
-		"time": String,
 		"totalprice": Number,
 		"totalsale": Number,
 		"bonuses": Number,
 		"status": String,
 		"ended": Number,
-		"cart": { type : Array , "default" : [] }
+		"cart": [{ 
+			"program" : { type: Schema.Types.ObjectId, ref: 'Program' },
+			"option": Number,
+			"name": String,
+			"price": Number,
+			"quanity": Number,
+			"days": [Date]
+		}]
 	}
 );
 

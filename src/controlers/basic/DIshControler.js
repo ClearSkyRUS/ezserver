@@ -1,12 +1,33 @@
 import DishModel from '../../models/basic/dish';
+import DishTypeModel from '../../models/basic/dishType';
+import ProductModel from '../../models/basic/product';
+
+import getKeys from '../../helpers/getKeys';
+import getDishsParams from '../../helpers/getDishsParams';
 
 class DishControler {
 
 	index(req, res) {
-		DishModel.find().then(( err, dishs ) => {
-			if (err)
+		DishModel.find().populate('type productslist.product').exec(function(err, dishs) {
+			if (err) 
 				return res.send(err);
-			res.json(dishs);
+			var dishsObj = getDishsParams(dishs);
+			DishTypeModel.find().exec(function(err, dishTypes) {
+				if (err) 
+					return res.send(err);
+
+				ProductModel.find().exec(function(err, products) {
+					if (err)
+						return res.send(err); 
+					var productsObj = getKeys(products, 'title');
+					var response = {
+						types: dishTypes,
+						dishs: dishsObj,
+						products: productsObj
+					}
+					res.json(response); 
+				});
+			});
 		});
 	}
 
@@ -17,7 +38,8 @@ class DishControler {
 
 
 		const dish = new DishModel({
-			"title": data.title,
+			"title": data.title, 
+			"tehMap": data.tehMap,
 			"type": data.type,
 			"image": data.image,
 			"gramms": data.gramms,
@@ -26,9 +48,6 @@ class DishControler {
 			"fat": data.fat,
 			"carb": data.carb,
 			"price": data.price,
-			"key": data.title, 
-			"value": data.title,
-			"text": data.title,
 			"productslist": data.productslist
 		});
 

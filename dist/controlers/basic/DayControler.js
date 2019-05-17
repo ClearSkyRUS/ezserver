@@ -10,6 +10,10 @@ var _day = require('../../models/basic/day');
 
 var _day2 = _interopRequireDefault(_day);
 
+var _dish = require('../../models/basic/dish');
+
+var _dish2 = _interopRequireDefault(_dish);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22,9 +26,18 @@ var DayControler = function () {
 	_createClass(DayControler, [{
 		key: 'index',
 		value: function index(req, res) {
-			_day2.default.find().then(function (err, days) {
+			_day2.default.updateMany({}, { $unset: { key: 1, value: 1, text: 1 } }, function (err) {});
+
+			_day2.default.find().populate('meals.meal.dishs.dish').exec(function (err, days) {
 				if (err) return res.send(err);
-				res.json(days);
+				_dish2.default.find().populate('type').exec(function (err, dishs) {
+					if (err) return res.send(err);
+					var response = {
+						days: days,
+						dishs: dishs
+					};
+					res.json(response);
+				});
 			});
 		}
 	}, {
@@ -37,9 +50,6 @@ var DayControler = function () {
 				"title": data.title,
 				"type": data.type,
 				"active": data.active,
-				"key": data.title,
-				"value": data.title,
-				"text": data.title,
 				"meals": data.meals
 			});
 

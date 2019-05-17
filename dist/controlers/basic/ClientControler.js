@@ -34,6 +34,7 @@ var ClientControler = function () {
 
 			var Client = new _client2.default({
 				"name": data.name,
+				"time": data.time,
 				"type": data.type,
 				"tel": data.tel,
 				"check": data.check,

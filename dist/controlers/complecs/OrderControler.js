@@ -14,17 +14,13 @@ var _program = require('../../models/complecs/program');
 
 var _program2 = _interopRequireDefault(_program);
 
-var _dataToSting = require('../../helpers/dataToSting');
+var _client = require('../../models/basic/client');
 
-var _dataToSting2 = _interopRequireDefault(_dataToSting);
+var _client2 = _interopRequireDefault(_client);
 
-var _dish = require('../../models/basic/dish');
+var _getKeys = require('../../helpers/getKeys');
 
-var _dish2 = _interopRequireDefault(_dish);
-
-var _product = require('../../models/basic/product');
-
-var _product2 = _interopRequireDefault(_product);
+var _getKeys2 = _interopRequireDefault(_getKeys);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38,9 +34,46 @@ var OrderControler = function () {
 	_createClass(OrderControler, [{
 		key: 'index',
 		value: function index(req, res) {
-			_orders2.default.find().then(function (err, Orders) {
+
+			_orders2.default.find().exec(function (err, orders) {
 				if (err) return res.send(err);
-				res.json(Orders);
+				var _iteratorNormalCompletion = true;
+				var _didIteratorError = false;
+				var _iteratorError = undefined;
+
+				try {
+					for (var _iterator = orders[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+						var order = _step.value;
+
+						_orders2.default.findByIdAndUpdate(order._id, { $set: order }, function (err) {});
+					}
+				} catch (err) {
+					_didIteratorError = true;
+					_iteratorError = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion && _iterator.return) {
+							_iterator.return();
+						}
+					} finally {
+						if (_didIteratorError) {
+							throw _iteratorError;
+						}
+					}
+				}
+
+				_program2.default.find().select('title type options').exec(function (err, programs) {
+					if (err) return res.send(err);
+					_client2.default.find().exec(function (err, clients) {
+						if (err) return res.send(err);
+
+						res.json({
+							"orders": orders,
+							"programs": (0, _getKeys2.default)(programs, 'title'),
+							"clients": clients
+						});
+					});
+				});
 			});
 		}
 	}, {
@@ -50,7 +83,6 @@ var OrderControler = function () {
 			var Order = new _orders2.default({
 				"client": data.client,
 				"date": data.date,
-				"time": data.time,
 				"totalprice": data.totalprice,
 				"totalsale": data.totalsale,
 				"bonuses": data.bonuses,

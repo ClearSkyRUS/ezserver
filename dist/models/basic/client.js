@@ -12,6 +12,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var ClientSchema = new _mongoose.Schema({
 	"name": String,
+	"time": String,
 	"type": String,
 	"tel": Number,
 	"check": Number,

@@ -1,12 +1,24 @@
 import DayModel from '../../models/basic/day';
+import DishModel from '../../models/basic/dish';
 
 class DayControler {
 
 	index(req, res) {
-		DayModel.find().then(( err, days ) => {
+		DayModel.updateMany({}, {$unset: {key: 1, value: 1, text: 1}}, err => {})
+
+ 
+		DayModel.find().populate('meals.meal.dishs.dish').exec(function(err, days) {
 			if (err)
 				return res.send(err);
-			res.json(days);
+			DishModel.find().populate('type').exec(function(err, dishs) {
+				if (err) 
+					return res.send(err);
+				var response = {
+					days: days,
+					dishs: dishs
+				}
+				res.json(response); 
+			});
 		});
 	}
 
@@ -20,9 +32,6 @@ class DayControler {
 			"title": data.title,
 			"type": data.type,
 			"active": data.active,
-			"key": data.title, 
-			"value": data.title,
-			"text": data.title,
 			"meals": data.meals
 		});
 

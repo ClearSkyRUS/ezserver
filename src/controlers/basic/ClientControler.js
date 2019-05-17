@@ -16,6 +16,7 @@ class ClientControler {
 
 		const Client = new ClientModel({
 			"name": data.name,
+			"time": data.time,
 			"type": data.type,
 			"tel": data.tel,
 			"check": data.check,

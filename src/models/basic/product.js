@@ -8,6 +8,9 @@ const ProductSchema = new Schema(
 		"fat": Number,
 		"carb": Number,
 		"price": Number,
+		"key": String, 
+		"value": String,
+		"text": String,
 		"cold": { 
 	    type: Number, 
 	    default: 0, 
@@ -19,10 +22,7 @@ const ProductSchema = new Schema(
 		"ganes": { 
 	    type: Number, 
 	    default: 0, 
-	    }, 
-		"key": String, 
-		"value": String,
-		"text": String
+	    }
 	}
 );
 

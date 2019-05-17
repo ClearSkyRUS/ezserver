@@ -4,128 +4,217 @@ import DatetoString from '../../helpers/dataToSting';
 import DishModel from '../../models/basic/dish';
 import ProductModel from '../../models/basic/product';
 import DayModel from '../../models/basic/day';
+import DaysQueryModel from '../../models/complecs/daysQuery';
+
+import getCalForPrograms  from '../../helpers/calWorker/getCalForPrograms';
+import getDishParams from '../../helpers/calWorker/helpers/getDishParams';
+
 
 class WorkDataControler {
 	index(req, res) {
 		var OrdersTomorrow = [];
-		const dayCount = req.params.count;
-	DayModel.find().exec(function(err, Days) {
+		const dayCount = parseFloat(req.params.count);
 
-		ProgramModel.find().exec(function(err, Programs) {
+		var dataTomorow = getDateOf(1);
+		var dataEnd = getDateOf(dayCount+1);
+
+		DaysQueryModel.find({"date": {
+			"$gte": dataTomorow, 
+			"$lt": dataEnd}}) 
+		.populate({
+	        path: 'day',
+	        populate: {
+		        path: 'meals.meal.dishs.dish', 
+		        populate: {
+	                path: 'type productslist.product'
+	            }
+	        }
+	    }).sort('date').exec(function(err, days) {
 			if (err) throw err;
-
-
-			OrderModel.find().exec(function(err, Orders) {
+			console.log(days)
+			OrderModel.find({"cart.days": {
+				"$gte": dataTomorow, 
+				"$lt": dataEnd}})
+			.populate({
+		        path: 'cart.program'
+	    	}).exec(function(err, orders) {
 				if (err) throw err;
-				var data =  new Date();
-				var tomorow = 0;
-				for (var i = 0; i < dayCount; i++) {
-					data.setDate(data.getDate() + 1)
-		     		var start = new Date(data.getFullYear(), 0, 0);
-					var diff = data - start;
-					var oneDay = 1000 * 60 * 60 * 24;
-					var day = Math.floor(diff / oneDay);
-					var today = (day+10) % Days.length;
+				console.log(orders)
+				var programsObj = [];
+				var daysObj = [];
+ 				for (var order of orders)
+ 					if (programsObj.indexOf(order.cart[0].program) === -1)
+ 						programsObj.push(order.cart[0].program)
 
-					if (i === 0)
-						tomorow = today;
+ 				for (var day of days)
+ 					if (daysObj.indexOf(day.day) === -1)
+ 						daysObj.push(day.day)
 
-		     		for (var order of Orders) {
+ 				programsObj = getCalForPrograms(programsObj, daysObj);
+
+ 				var OrdersObj = [];
+ 				for (var i = 0; i < dayCount; i++) {
+		     		for (var order of orders) {
 		     			for (var cart of order.cart) {
 		     				for (var day of cart.days) {
-		     					if (day.substr(0,10) === DatetoString(data)) {
-		     						var OrderObj = {program: cart.program, option: cart.option, count: cart.quanity, name: cart.name, date: day.substr(0,10), day: today, orderData: order}
-		     						OrdersTomorrow.push(OrderObj)
+		     					if (day.getDate() === dataTomorow.getDate()) {
+		     						var OrderObj = {
+		     							program: programsObj.find(o => o._id === cart.program._id), 
+		     							option: cart.option, 
+		     							count: cart.quanity, 
+		     							name: cart.name, 
+		     							date: dataTomorow.toISOString().substring(0, 10), 
+		     							day: days.find(o => o.date.getDate() === dataTomorow.getDate()).day, 
+		     							orderData: order}
+
+		     						OrdersObj.push(OrderObj)
 		     					}
 		     				}
 		     			}
 		     		}
+		     		dataTomorow.setDate(dataTomorow.getDate() + 1);
 	     		}
-		     	var dishsToCook = []
-		     	var programsObj = []
-		     		for (var order of OrdersTomorrow) {
-						for (var meal of (Programs.find(x => x._id.toString() === order.program).options).find(x => x.title === order.option).days[order.day].meals) {
-							for (var dishs of meal.meal) {
-							    for (var dish of dishs.dishs)
-							    	if (dishsToCook.find(x => x.id === dish.id)){
-							    		dishsToCook.find(x => x.id === dish.id).gram += dish.gram
-							    	} else {
-								    	var dishObj = {id: dish.id, gram: dish.gram}
-								   		dishsToCook.push(dishObj)
-							   		}
-							}
-						}
-							if (programsObj.find(x => (x.id === order.program && x.option === order.option && x.day === order.day)))  { 
-								programsObj.find(x => (x.id === order.program && x.option === order.option && x.day === order.day)).count++;
-							} else {
-							    var programObj = {
-								    id: order.program,
-								    title: Programs.find(x => x._id.toString() === order.program).title,
-								    option: order.option,
-								    day: order.day,
-								    count: 1,
-								    meals: (Programs.find(x => x._id.toString() === order.program).options).find(x => x.title === order.option).days[order.day].meals
-								}
-								programsObj.push(programObj)
-							}
-					}
 
-					for (var dishToCook of dishsToCook) {
-						dishToCook.gram = dishToCook.gram * 1.05
-					}
+	     		var programsToSend = [];
+     			var dishsToCook = [];
 
-					var DishsObjects = []
-					DishModel.find().exec(function(err, Dish) {
-						if (err) throw err;
-						for (var dishToCook of dishsToCook) {
-							var dishObj = { id: dishToCook.id, title: Dish.find(x => x._id.toString() === dishToCook.id).title, gram: (dishToCook.gram), count: 0, products: []}
-							if (dishToCook.unit === "Шт")
-								dishObj.count = dishToCook.count
-							for (var productInDish of Dish.find(x => x._id.toString() === dishToCook.id).productslist) {
-								var productObj = { id: productInDish.id, title: productInDish.value, hot: productInDish.hot, cold: productInDish.cold, ganes: productInDish.ganes,  gram: ((dishToCook.gram * (productInDish.gramm / Dish.find(x => x._id.toString() === dishToCook.id).gramms)))}
-								dishObj.products.push(productObj)
-							}
-							DishsObjects.push(dishObj)
+		     	for (var order of OrdersObj) {
+					for (var meal of order.program.options.find(x => x.cal === order.option).days.find(x => x.title === order.day.title).meals) {
+						for (var dishs of meal.meal) {
+						    for (var dish of dishs.dishs)
+						    	if (dishsToCook.find(x => x.dish._id === dish.dish._id)){
+						    		dishsToCook.find(x => x.dish._id === dish.dish._id).gram += dish.gram
+						    	} else {
+							    	var dishObj = {dish: dish.dish, gram: dish.gram}
+							   		dishsToCook.push(dishObj)
+						   		}
 						}
-						var buyList = {totalPrice: 0, products: []}
-						ProductModel.find().exec(function(err, Products) {
-							if (err) throw err;
-							for (var dishObj of DishsObjects) {
-								for (var productObj of dishObj.products) {
-									var grammNeed = 0;
-									if (productObj.ganes) {
-		                            grammNeed = productObj.gram/(Products.find(x => x._id.toString() === productObj.id ).ganes/100)
-		                            productObj.gram = grammNeed
-		                        	} else {
-		                        	if (productObj.hot)
-		                        		productObj.gram = productObj.gram + productObj.gram * Products.find(x => x._id.toString() === productObj.id ).hot/100 * productObj.hot
-		                            grammNeed = productObj.gram + ((productObj.gram * (Products.find(x => x._id.toString() === productObj.id ).cold/100)) * productObj.cold)
-		                        	}
-		                			if (buyList.products.find(x => x.id === productObj.id)) {
-		                				buyList.products.find(x => x.id === productObj.id).gramneed += grammNeed
-		                			} else {
-										var productToList = {id: productObj.id, title: productObj.title, price: (grammNeed * (Products.find(x => x._id.toString() === productObj.id).price/1000)), gramneed: grammNeed, gramhave: 0 }
-										buyList.products.push(productToList)
-									}
-								}
+					}
+					if (programsToSend.find(x => (x.title === order.program.title && x.option === order.option && x.day === order.day)))  { 
+						programsToSend.find(x => (x.title === order.program.title && x.option === order.option && x.day === order.day)).count++;
+					} else {
+					    var programObj = {
+						    title: order.program.title,
+						    option: order.option,
+						    day: order.day,
+						    count: 1,
+						    meals: order.program.options.find(x => x.cal === order.option).days.find(x => x.title === order.day.title).meals
+						}
+						programsToSend.push(programObj)
+					}
+				}
+
+				for (var dishToCook of dishsToCook) {
+					dishToCook.gram = dishToCook.gram * 1.05
+				}
+
+
+				var DishsObjects = []
+				for (var dishToCook of dishsToCook) {
+					var dishObj = { 
+						title: dishToCook.dish.title, 
+						gram: dishToCook.gram, 
+						count: 0, 
+						products: []}
+					
+					if (dishToCook.dish.type.unit === "Шт")
+						dishObj.count = ((dishToCook.gram/105)*100)/getDishParams(dishToCook.dish.productslist).gramms
+					
+					for (var productInDish of dishToCook.dish.productslist) {
+						var gramS = dishToCook.gram/getDishParams(dishToCook.dish.productslist).gramms * productInDish.gramm/checkHot(productInDish) /checkCold(productInDish) * 10000
+						var gramC = dishToCook.gram/getDishParams(dishToCook.dish.productslist).gramms * productInDish.gramm/checkHot(productInDish) * 100
+						var gramH = dishToCook.gram/getDishParams(dishToCook.dish.productslist).gramms * productInDish.gramm 
+						var gramG = dishToCook.gram/getDishParams(dishToCook.dish.productslist).gramms * productInDish.gramm/checkGanes(productInDish)
+						var productObj = {
+							id: productInDish.product._id,
+							title: productInDish.product.title, 
+							hot: productInDish.product.hot, 
+							cold: productInDish.product.cold, 
+							ganes: productInDish.product.ganes,
+							price: productInDish.product.price,
+							gramS: gramS,
+							gramC: gramC,
+							gramH: gramH,
+							gramG: gramG}
+
+						dishObj.products.push(productObj)
+					}
+					DishsObjects.push(dishObj)
+				}
+
+				var buyList = {totalPrice: 0, products: []}
+				for (var dishObj of DishsObjects) {
+					for (var productObj of dishObj.products) {
+						var grammNeed = 0;
+						if (productObj.ganes) {
+		                    grammNeed = productObj.gramG
+		               	} else {
+		                	grammNeed = productObj.gramS
+		                }
+		                if (buyList.products.find(x => x.id === productObj.id)) {
+		                	buyList.products.find(x => x.id === productObj.id).gramneed += grammNeed;
+		                	buyList.products.find(x => x.id === productObj.id).price += (grammNeed * (productObj.price/1000));
+		                } else {
+							var productToList = {
+								id: productObj.id, 
+								title: productObj.title, 
+								price: (grammNeed * (productObj.price/1000)), 
+								gramneed: grammNeed, 
+								gramhave: 0 
 							}
-							buyList.totalPrice = buyList.products.reduce((price, product) => price + product.price, 0);
-								var jsonToClient = {
-									DishsToCook: DishsObjects,
-									BuyList: buyList,
-									Orders: OrdersTomorrow,
-									Programs: programsObj,
-									DaysInfo: {
-										dayTom: tomorow,
-										days: Days
-									}
-								}
-								res.json(jsonToClient);
-						});
+							buyList.products.push(productToList)
+						}
+					} 
+				}
+				buyList.totalPrice = buyList.products.reduce((price, item) => price + item.price, 0);
+
+				DaysQueryModel.find().populate({
+			        path: 'day',
+			        populate: {
+				        path: 'meals.meal.dishs.dish',
+			        }
+			    }).sort('date').exec(function(err, daysMas) {
+			    	if (err) throw err;
+					res.json({
+						DishsToCook: DishsObjects,
+						BuyList: buyList,
+						Orders: OrdersObj,
+						Programs: programsToSend,
+						DaysInfo: {
+							dayTom: dataTomorow,
+							days: daysMas
+						}
 					});
 				});
-	     	});
+		   	});
 		});
+
+
+		function getDateOf (days) {
+			var date = new Date();
+			date.setHours(4, 0, 0, 0);
+			date.setDate(date.getDate() + days);
+
+			return date;
+		}
+
+		function checkGanes(item) {
+			if (item.ganes)
+				return item.product.ganes / 100
+			return 1
+		} 
+
+		function checkHot(item) {
+			if (item.hot)
+				return (100 - item.product.hot === 0) ? 100 : (100 - item.product.hot)
+			return 100
+		} 
+
+		function checkCold(item) {
+			if (item.cold)
+				return (100 - item.product.cold === 0) ? 100 : (100 - item.product.cold)
+			return 100
+		} 
 	}
 }
 

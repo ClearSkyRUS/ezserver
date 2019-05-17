@@ -5,17 +5,12 @@ import mongoose, { Schema } from 'mongoose';
 const ProgramSchema = new Schema(
 	{
 		"title": String,
-		"type": String,
+		"public": { type: Boolean, default: false },
 		"image": String,
-		"price": String,
-		"key": String, 
-		"value": String,
-		"text": String,
-		"options": { type : Array , "default" : [] },
-		"settings": { type : Array , "default" : [] },
-		"portions": { type : Array , "default" : [] }
+		"options": [{ "cal": Number, "price": Number, "public": { type: Boolean, default: false } }],
+		"settings": { type : Array , "default" : [] }
 	}
-);
+); 
 
 const Program = mongoose.model('Program', ProgramSchema);
 

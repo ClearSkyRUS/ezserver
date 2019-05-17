@@ -1,32 +1,54 @@
 import ProgramModel from '../../models/complecs/program';
+import DayModel from '../../models/basic/day';
+
+import getCalForPrograms from '../../helpers/calWorker/getCalForPrograms';
 
 class ProgramControler {
 
 	index(req, res) {
-		ProgramModel.find().then(( err, programs ) => {
+		ProgramModel.find().exec(( err, programs ) => {
 			if (err)
 				return res.send(err);
-			res.json(programs);
+			DayModel.find().populate({
+		        path: 'meals.meal.dishs.dish',
+		        populate: {
+		            path: 'type productslist.product'
+		        }
+    		}).exec(( err, days ) => {
+				if (err)
+					return res.send(err);
+
+				var settings = [];
+				for (var meal of days[0].meals) {
+					var set = {
+			        	"title": meal.title,
+			        	"types": []
+			        }
+			        for (var mealItem of meal.meal) {
+			        	set.types.push(mealItem.type)
+			        }
+			        settings.push(set)
+				}
+
+
+				var jsonObj = {
+					"programs": getCalForPrograms(programs, days),
+					"settings": settings
+				}
+				res.json(jsonObj);
+			});
 		});
 	}
 
 	create(req, res) {
 		var data = req.body;
-		if (data.type === 'Другой')
-		data.type = data.otherType
-
 
 		const program = new ProgramModel({
 			"title": data.title,
-			"type": data.type,
+			"public": data.public,
 			"image": data.image,
-			"price": data.price,
-			"key": data.title, 
-			"value": data.title,
-			"text": data.title,
 			"options":  data.options,
-			"settings":  data.settings,
-			"portions":  data.portions
+			"settings":  data.settings
 		});
 
 		program.save().then(() => {
@@ -36,8 +58,6 @@ class ProgramControler {
 
 	update(req, res) {
 		var data = req.body;
-		if (data.type === 'Другой')
-		data.type = data.otherType
 
 		ProgramModel.findByIdAndUpdate(req.params.id, { $set: data }, err => {
 			if (err)

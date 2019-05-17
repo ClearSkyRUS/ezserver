@@ -5,6 +5,7 @@ import mongoose, { Schema } from 'mongoose';
 const ClientSchema = new Schema(
 	{
 		"name": String,
+		"time": String,
 		"type": String,
 		"tel": Number,
 		"check": Number,

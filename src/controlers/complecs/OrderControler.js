@@ -1,15 +1,35 @@
 import OrderModel from '../../models/complecs/orders';
 import ProgramModel from '../../models/complecs/program';
-import DatetoString from '../../helpers/dataToSting';
-import DishModel from '../../models/basic/dish';
-import ProductModel from '../../models/basic/product';
+import ClientModel from '../../models/basic/client';
+
+import getKeys from '../../helpers/getKeys';
 
 class OrderControler {
 	index(req, res) {
-		OrderModel.find().then(( err, Orders ) => {
+
+
+		OrderModel.find().exec(function(err, orders) {
 			if (err)
 				return res.send(err);
-			res.json(Orders);
+			for (var order of orders) {
+				OrderModel.findByIdAndUpdate(order._id, { $set: order }, err => {
+				});
+			}
+			ProgramModel.find().select('title type options').exec(function(err, programs) {
+				if (err)
+					return res.send(err);
+				ClientModel.find().exec(function(err, clients) {
+					if (err)
+						return res.send(err);
+
+
+					res.json({
+						"orders": orders,
+						"programs": getKeys(programs, 'title'),
+						"clients": clients
+					});
+				});
+			});
 		});
 	}
 
@@ -18,7 +38,6 @@ class OrderControler {
 		const Order = new OrderModel({
 			"client":  data.client,
 			"date":  data.date,
-			"time": data.time,
 			"totalprice": data.totalprice,
 			"totalsale": data.totalsale,
 			"bonuses": data.bonuses,

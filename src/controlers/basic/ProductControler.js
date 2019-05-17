@@ -4,9 +4,11 @@ class ProductControler {
 
 	index(req, res) {
 		ProductModel.find().then(( err, products ) => {
+
 			if (err)
 				return res.send(err);
-			res.json(products);
+
+			res.json(products); 
 		});
 	}
 
@@ -24,10 +26,7 @@ class ProductControler {
 			"price": data.price,
 			"cold": data.cold,
 			"hot": data.hot,
-			"ganes": data.ganes,
-			"key":  data.title, 
-			"value": data.title,
-			"text": data.title
+			"ganes": data.ganes
 		});
 
 		product.save().then(() => {

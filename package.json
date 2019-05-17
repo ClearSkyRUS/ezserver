@@ -21,6 +21,7 @@
     "https": "^1.0.0",
     "mongo": "^0.1.0",
     "mongoose": "^5.4.11",
+    "node-telegram-bot-api": "^0.30.0",
     "yarn": "^1.13.0"
   },
   "devDependencies": {

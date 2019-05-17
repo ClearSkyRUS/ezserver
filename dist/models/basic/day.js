@@ -13,11 +13,24 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var DaySchema = new _mongoose.Schema({
 	"title": String,
 	"type": String,
-	"active": Number,
 	"key": String,
 	"value": String,
 	"text": String,
-	"meals": { type: Array, "default": [] }
+	"active": { type: Boolean, default: false },
+	"meals": [{
+		"title": String,
+		"procent": { type: Number, default: 20 },
+		"meal": [{
+			"main": Boolean,
+			"type": { type: String },
+			"image": String,
+			"dishs": [{
+				"id": String,
+				"dish": { type: _mongoose.Schema.Types.ObjectId, ref: 'Dish' },
+				"procent": { type: Number, default: 100 }
+			}]
+		}]
+	}]
 });
 
 var Day = _mongoose2.default.model('Day', DaySchema);

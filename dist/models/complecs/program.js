@@ -12,15 +12,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var ProgramSchema = new _mongoose.Schema({
 	"title": String,
-	"type": String,
+	"public": { type: Boolean, default: false },
 	"image": String,
-	"price": String,
-	"key": String,
-	"value": String,
-	"text": String,
-	"options": { type: Array, "default": [] },
-	"settings": { type: Array, "default": [] },
-	"portions": { type: Array, "default": [] }
+	"options": [{ "cal": Number, "price": Number, "public": { type: Boolean, default: false } }],
+	"settings": { type: Array, "default": [] }
 });
 
 var Program = _mongoose2.default.model('Program', ProgramSchema);

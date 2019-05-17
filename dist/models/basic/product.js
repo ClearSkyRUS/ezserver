@@ -17,6 +17,9 @@ var ProductSchema = new _mongoose.Schema({
 	"fat": Number,
 	"carb": Number,
 	"price": Number,
+	"key": String,
+	"value": String,
+	"text": String,
 	"cold": {
 		type: Number,
 		default: 0
@@ -28,10 +31,7 @@ var ProductSchema = new _mongoose.Schema({
 	"ganes": {
 		type: Number,
 		default: 0
-	},
-	"key": String,
-	"value": String,
-	"text": String
+	}
 });
 
 var Product = _mongoose2.default.model('Product', ProductSchema);

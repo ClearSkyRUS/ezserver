@@ -24,6 +24,7 @@ var ClientControler = function () {
 		value: function index(req, res) {
 			_client2.default.find().then(function (err, Clients) {
 				if (err) return res.send(err);
+
 				res.json(Clients);
 			});
 		}

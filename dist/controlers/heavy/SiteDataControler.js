@@ -6,23 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _program = require('../../models/complecs/program');
+var _models = require('../../models');
 
-var _program2 = _interopRequireDefault(_program);
-
-var _daysQuery = require('../../models/complecs/daysQuery');
-
-var _daysQuery2 = _interopRequireDefault(_daysQuery);
-
-var _getDayAndMonth = require('../../helpers/getDayAndMonth');
-
-var _getDayAndMonth2 = _interopRequireDefault(_getDayAndMonth);
-
-var _getCalForPrograms = require('../../helpers/calWorker/getCalForPrograms');
-
-var _getCalForPrograms2 = _interopRequireDefault(_getCalForPrograms);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _helpers = require('../../helpers');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -37,7 +23,7 @@ var SiteDataControler = function () {
 			var discounts = [{ quanity: 1, discount: 0 }, { quanity: 5, discount: 10 }, { quanity: 20, discount: 20 }];
 			var daysOfWeek = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 
-			_program2.default.aggregate([{ $match: { 'public': true, 'options.public': true } }, { $project: {
+			_models.ProgramModel.aggregate([{ $match: { 'public': true, 'options.public': true } }, { $project: {
 					options: { $filter: {
 							input: '$options',
 							as: 'option',
@@ -49,7 +35,7 @@ var SiteDataControler = function () {
 					type: 1
 				} }]).exec(function (err, programs) {
 				if (err) throw err;
-				_daysQuery2.default.find().populate({
+				_models.DaysQueryModel.find().populate({
 					path: 'day',
 					populate: {
 						path: 'meals.meal.dishs.dish',
@@ -65,7 +51,7 @@ var SiteDataControler = function () {
 						daysObj.push(days[i].day);
 					}console.log(programs);
 
-					var programsObj = (0, _getCalForPrograms2.default)(programs, daysObj);
+					var programsObj = (0, _helpers.getCalForPrograms)(programs, daysObj);
 
 					var jsonToClient = { programs: [], days: daysObj, programsObj: programsObj };
 					var _iteratorNormalCompletion = true;
@@ -100,7 +86,7 @@ var SiteDataControler = function () {
 										var date = new Date(days[i].date);
 										var selectedDay = option.days[i];
 										var dayItem = {
-											date: daysOfWeek[date.getDay()] + ': ' + (0, _getDayAndMonth2.default)(date),
+											date: daysOfWeek[date.getDay()] + ': ' + (0, _helpers.getDay)(date),
 											meals: [],
 											stat: { cal: selectedDay.cal.toFixed(0), prot: selectedDay.prot.toFixed(0), fat: selectedDay.fat.toFixed(0), carb: selectedDay.carb.toFixed(0) }
 										};

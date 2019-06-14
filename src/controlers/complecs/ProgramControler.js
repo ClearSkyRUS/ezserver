@@ -1,7 +1,5 @@
-import ProgramModel from '../../models/complecs/program';
-import DayModel from '../../models/basic/day';
-
-import getCalForPrograms from '../../helpers/calWorker/getCalForPrograms';
+import { DayModel, ProgramModel } from '../../models'
+import { getDay, getCalForPrograms } from '../../helpers'
 
 class ProgramControler {
 

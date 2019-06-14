@@ -6,6 +6,9 @@ class ClientControler {
 		ClientModel.find().then(( err, Clients ) => {
 			if (err)
 				return res.send(err);
+
+
+			
 			res.json(Clients);
 		});
 	}

@@ -1,8 +1,5 @@
-import ProgramModel from '../../models/complecs/program';
-import DaysQueryModel from '../../models/complecs/daysQuery';
-
-import getDay from '../../helpers/getDayAndMonth';
-import getCalForPrograms  from '../../helpers/calWorker/getCalForPrograms';
+import { DaysQueryModel, ProgramModel } from '../../models'
+import { getDay, getCalForPrograms } from '../../helpers'
  
 class SiteDataControler {
 	index(req, res) {

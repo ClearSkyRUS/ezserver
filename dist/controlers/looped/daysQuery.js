@@ -14,6 +14,10 @@ var _day = require('../../models/basic/day');
 
 var _day2 = _interopRequireDefault(_day);
 
+var _sendMessagesToAdmins = require('../telegram/sendMessagesToAdmins');
+
+var _sendMessagesToAdmins2 = _interopRequireDefault(_sendMessagesToAdmins);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -51,11 +55,11 @@ var DaysQueryControler = function () {
 						console.log('Понедельник: ' + monday);
 						var dayNumber = 0;
 						for (var i = 0; i < 14; i++) {
-							var _DaysQuery = new _daysQuery2.default({
+							var DaysQuery = new _daysQuery2.default({
 								"day": Days[dayNumber]._id,
 								"date": monday.setDate(monday.getDate() + 1)
 							});
-							_DaysQuery.save();
+							DaysQuery.save();
 							dayNumber++;
 							if (dayNumber === Days.length) dayNumber = 0;
 						}
@@ -63,7 +67,7 @@ var DaysQueryControler = function () {
 						data.setDate(data.getDate() + 1);
 						var weakNow = data.getWeek();
 						var activeWeak = DaysQuerys[0].date.getWeek();
-
+						console.log(weakNow + " " + activeWeak);
 						if (weakNow > activeWeak) {
 							console.log('Замена недели');
 							var monday = getMonday(data);
@@ -72,23 +76,23 @@ var DaysQueryControler = function () {
 							var dayNumber = getLastDay(DaysQuerys[13].day, Days);
 							dayNumber++;
 							if (dayNumber === Days.length) dayNumber = 0;
+
+							_daysQuery2.default.deleteMany({ date: {
+									"$gte": DaysQuerys[0].date,
+									"$lt": DaysQuerys[7].date } }, function (err) {
+								if (err) return handleError(err);
+							});
 							for (var i = 0; i < 7; i++) {
-								_daysQuery2.default.remove({ _id: DaysQuerys[i]._id }).then(function (program) {});
-								if (i = 0) {
-									var _DaysQuery2 = new _daysQuery2.default({
-										"day": Days[dayNumber]._id,
-										"date": monday.setDate()
-									});
-								} else {
-									var _DaysQuery3 = new _daysQuery2.default({
-										"day": Days[dayNumber]._id,
-										"date": monday.setDate(monday.getDate() + 1)
-									});
-								}
-								DaysQuery.save();
+								console.log('Цикл: ' + i);
+								var _DaysQuery = new _daysQuery2.default({
+									"day": Days[dayNumber]._id,
+									"date": monday.setDate(monday.getDate() + 1)
+								});
+								_DaysQuery.save();
 								dayNumber++;
 								if (dayNumber === Days.length) dayNumber = 0;
 							}
+							(0, _sendMessagesToAdmins2.default)('Новая неделя, ', 'Давай уже работать, але! Меню составлено!');
 						}
 					}
 				});

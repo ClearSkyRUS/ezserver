@@ -1,6 +1,8 @@
 import DaysQueryModel from '../../models/complecs/daysQuery';
 import DayModel from '../../models/basic/day';
 
+import TelegramSend from '../telegram/sendMessagesToAdmins';
+
 class DaysQueryControler {
 
 	index(req, res) {
@@ -44,7 +46,7 @@ class DaysQueryControler {
 					data.setDate(data.getDate() + 1)
 					var weakNow = data.getWeek();
 					var activeWeak = DaysQuerys[0].date.getWeek();
-
+					console.log(weakNow + " " + activeWeak)
 					if (weakNow > activeWeak) {
 						console.log('Замена недели')
 						var monday = getMonday(data)
@@ -54,24 +56,24 @@ class DaysQueryControler {
 						dayNumber++;
 							if (dayNumber === Days.length)
 								dayNumber = 0;
+
+						DaysQueryModel.deleteMany({ date: {
+								"$gte": DaysQuerys[0].date, 
+								"$lt": DaysQuerys[7].date}}, function (err) {
+							  		if (err) return handleError(err);
+						});
 						for (var i = 0; i < 7; i++) {
-							DaysQueryModel.remove({ _id: DaysQuerys[i]._id}).then( program => {});
-							if (i = 0) {
-								const DaysQuery = new DaysQueryModel({
-									"day": Days[dayNumber]._id,
-									"date": monday.setDate()
-								});
-							} else {
-								const DaysQuery = new DaysQueryModel({
-									"day": Days[dayNumber]._id,
-									"date": monday.setDate(monday.getDate() + 1)
-								});
-							}  
+							console.log('Цикл: ' + i)
+							const DaysQuery = new DaysQueryModel({
+								"day": Days[dayNumber]._id,
+								"date": monday.setDate(monday.getDate() + 1)
+							});
 							DaysQuery.save();
 							dayNumber++;
 							if (dayNumber === Days.length)
 								dayNumber = 0;
 						}
+						TelegramSend('Новая неделя, ', 'Давай уже работать, але! Меню составлено!');
 					}
 				}
 			});

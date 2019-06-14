@@ -6,19 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _program = require('../../models/complecs/program');
+var _models = require('../../models');
 
-var _program2 = _interopRequireDefault(_program);
-
-var _day = require('../../models/basic/day');
-
-var _day2 = _interopRequireDefault(_day);
-
-var _getCalForPrograms = require('../../helpers/calWorker/getCalForPrograms');
-
-var _getCalForPrograms2 = _interopRequireDefault(_getCalForPrograms);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _helpers = require('../../helpers');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -30,9 +20,9 @@ var ProgramControler = function () {
 	_createClass(ProgramControler, [{
 		key: 'index',
 		value: function index(req, res) {
-			_program2.default.find().exec(function (err, programs) {
+			_models.ProgramModel.find().exec(function (err, programs) {
 				if (err) return res.send(err);
-				_day2.default.find().populate({
+				_models.DayModel.find().populate({
 					path: 'meals.meal.dishs.dish',
 					populate: {
 						path: 'type productslist.product'
@@ -96,7 +86,7 @@ var ProgramControler = function () {
 					}
 
 					var jsonObj = {
-						"programs": (0, _getCalForPrograms2.default)(programs, days),
+						"programs": (0, _helpers.getCalForPrograms)(programs, days),
 						"settings": settings
 					};
 					res.json(jsonObj);
@@ -108,7 +98,7 @@ var ProgramControler = function () {
 		value: function create(req, res) {
 			var data = req.body;
 
-			var program = new _program2.default({
+			var program = new _models.ProgramModel({
 				"title": data.title,
 				"public": data.public,
 				"image": data.image,
@@ -125,7 +115,7 @@ var ProgramControler = function () {
 		value: function update(req, res) {
 			var data = req.body;
 
-			_program2.default.findByIdAndUpdate(req.params.id, { $set: data }, function (err) {
+			_models.ProgramModel.findByIdAndUpdate(req.params.id, { $set: data }, function (err) {
 				if (err) return res.send(err);
 				res.json({ status: "updated" });
 			});
@@ -133,7 +123,7 @@ var ProgramControler = function () {
 	}, {
 		key: 'delete',
 		value: function _delete(req, res) {
-			_program2.default.remove({ _id: req.params.id }).then(function (program) {
+			_models.ProgramModel.remove({ _id: req.params.id }).then(function (program) {
 				if (program) return res.json({ status: "deleted" });
 
 				res.json({ status: "error" });

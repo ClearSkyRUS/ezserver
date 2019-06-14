@@ -2,7 +2,8 @@ import OrderModel from '../../models/complecs/orders';
 import ProgramModel from '../../models/complecs/program';
 import ClientModel from '../../models/basic/client';
 
-import getKeys from '../../helpers/getKeys';
+import { getKeys } from '../../helpers';
+
 
 class OrderControler {
 	index(req, res) {

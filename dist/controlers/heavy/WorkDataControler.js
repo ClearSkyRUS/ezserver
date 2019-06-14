@@ -6,43 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _orders = require('../../models/complecs/orders');
+var _models = require('../../models');
 
-var _orders2 = _interopRequireDefault(_orders);
-
-var _program = require('../../models/complecs/program');
-
-var _program2 = _interopRequireDefault(_program);
-
-var _dataToSting = require('../../helpers/dataToSting');
-
-var _dataToSting2 = _interopRequireDefault(_dataToSting);
-
-var _dish = require('../../models/basic/dish');
-
-var _dish2 = _interopRequireDefault(_dish);
-
-var _product = require('../../models/basic/product');
-
-var _product2 = _interopRequireDefault(_product);
-
-var _day = require('../../models/basic/day');
-
-var _day2 = _interopRequireDefault(_day);
-
-var _daysQuery = require('../../models/complecs/daysQuery');
-
-var _daysQuery2 = _interopRequireDefault(_daysQuery);
-
-var _getCalForPrograms = require('../../helpers/calWorker/getCalForPrograms');
-
-var _getCalForPrograms2 = _interopRequireDefault(_getCalForPrograms);
-
-var _getDishParams = require('../../helpers/calWorker/helpers/getDishParams');
-
-var _getDishParams2 = _interopRequireDefault(_getDishParams);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _helpers = require('../../helpers');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -57,10 +23,10 @@ var WorkDataControler = function () {
 			var OrdersTomorrow = [];
 			var dayCount = parseFloat(req.params.count);
 
-			var dataTomorow = getDateOf(1);
-			var dataEnd = getDateOf(dayCount + 1);
+			var dataTomorow = (0, _helpers.getDateOf)(1);
+			var dataEnd = (0, _helpers.getDateOf)(dayCount + 1);
 
-			_daysQuery2.default.find({ "date": {
+			_models.DaysQueryModel.find({ "date": {
 					"$gte": dataTomorow,
 					"$lt": dataEnd } }).populate({
 				path: 'day',
@@ -72,14 +38,12 @@ var WorkDataControler = function () {
 				}
 			}).sort('date').exec(function (err, days) {
 				if (err) throw err;
-				console.log(days);
-				_orders2.default.find({ "cart.days": {
+				_models.OrderModel.find({ "cart.days": {
 						"$gte": dataTomorow,
 						"$lt": dataEnd } }).populate({
 					path: 'cart.program'
 				}).exec(function (err, orders) {
 					if (err) throw err;
-					console.log(orders);
 					var programsObj = [];
 					var daysObj = [];
 					var _iteratorNormalCompletion = true;
@@ -132,7 +96,7 @@ var WorkDataControler = function () {
 						}
 					}
 
-					programsObj = (0, _getCalForPrograms2.default)(programsObj, daysObj);
+					programsObj = (0, _helpers.getCalForPrograms)(programsObj, daysObj);
 
 					var OrdersObj = [];
 					for (var i = 0; i < dayCount; i++) {
@@ -388,10 +352,11 @@ var WorkDataControler = function () {
 							var dishObj = {
 								title: dishToCook.dish.title,
 								gram: dishToCook.gram,
+								tehMap: dishToCook.dish.tehMap,
 								count: 0,
 								products: [] };
 
-							if (dishToCook.dish.type.unit === "Шт") dishObj.count = dishToCook.gram / 105 * 100 / (0, _getDishParams2.default)(dishToCook.dish.productslist).gramms;
+							if (dishToCook.dish.type.unit === "Шт") dishObj.count = dishToCook.gram / 105 * 100 / (0, _helpers.getDishParams)(dishToCook.dish.productslist).gramms;
 
 							var _iteratorNormalCompletion13 = true;
 							var _didIteratorError13 = false;
@@ -401,10 +366,10 @@ var WorkDataControler = function () {
 								for (var _iterator13 = dishToCook.dish.productslist[Symbol.iterator](), _step13; !(_iteratorNormalCompletion13 = (_step13 = _iterator13.next()).done); _iteratorNormalCompletion13 = true) {
 									var productInDish = _step13.value;
 
-									var gramS = dishToCook.gram / (0, _getDishParams2.default)(dishToCook.dish.productslist).gramms * productInDish.gramm / checkHot(productInDish) / checkCold(productInDish) * 10000;
-									var gramC = dishToCook.gram / (0, _getDishParams2.default)(dishToCook.dish.productslist).gramms * productInDish.gramm / checkHot(productInDish) * 100;
-									var gramH = dishToCook.gram / (0, _getDishParams2.default)(dishToCook.dish.productslist).gramms * productInDish.gramm;
-									var gramG = dishToCook.gram / (0, _getDishParams2.default)(dishToCook.dish.productslist).gramms * productInDish.gramm / checkGanes(productInDish);
+									var gramS = dishToCook.gram / (0, _helpers.getDishParams)(dishToCook.dish.productslist).gramms * productInDish.gramm / checkHot(productInDish) / checkCold(productInDish) * 10000;
+									var gramC = dishToCook.gram / (0, _helpers.getDishParams)(dishToCook.dish.productslist).gramms * productInDish.gramm / checkHot(productInDish) * 100;
+									var gramH = dishToCook.gram / (0, _helpers.getDishParams)(dishToCook.dish.productslist).gramms * productInDish.gramm;
+									var gramG = dishToCook.gram / (0, _helpers.getDishParams)(dishToCook.dish.productslist).gramms * productInDish.gramm / checkGanes(productInDish);
 									var productObj = {
 										id: productInDish.product._id,
 										title: productInDish.product.title,
@@ -527,7 +492,7 @@ var WorkDataControler = function () {
 						return price + item.price;
 					}, 0);
 
-					_daysQuery2.default.find().populate({
+					_models.DaysQueryModel.find().populate({
 						path: 'day',
 						populate: {
 							path: 'meals.meal.dishs.dish'
@@ -548,28 +513,20 @@ var WorkDataControler = function () {
 				});
 			});
 
-			function getDateOf(days) {
-				var date = new Date();
-				date.setHours(4, 0, 0, 0);
-				date.setDate(date.getDate() + days);
-
-				return date;
-			}
-
-			function checkGanes(item) {
+			var checkGanes = function checkGanes(item) {
 				if (item.ganes) return item.product.ganes / 100;
 				return 1;
-			}
+			};
 
-			function checkHot(item) {
+			var checkHot = function checkHot(item) {
 				if (item.hot) return 100 - item.product.hot === 0 ? 100 : 100 - item.product.hot;
 				return 100;
-			}
+			};
 
-			function checkCold(item) {
+			var checkCold = function checkCold(item) {
 				if (item.cold) return 100 - item.product.cold === 0 ? 100 : 100 - item.product.cold;
 				return 100;
-			}
+			};
 		}
 	}]);
 

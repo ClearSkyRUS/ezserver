@@ -18,9 +18,7 @@ var _client = require('../../models/basic/client');
 
 var _client2 = _interopRequireDefault(_client);
 
-var _getKeys = require('../../helpers/getKeys');
-
-var _getKeys2 = _interopRequireDefault(_getKeys);
+var _helpers = require('../../helpers');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -69,7 +67,7 @@ var OrderControler = function () {
 
 						res.json({
 							"orders": orders,
-							"programs": (0, _getKeys2.default)(programs, 'title'),
+							"programs": (0, _helpers.getKeys)(programs, 'title'),
 							"clients": clients
 						});
 					});

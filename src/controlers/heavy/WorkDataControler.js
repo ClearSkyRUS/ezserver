@@ -1,14 +1,5 @@
-import OrderModel from '../../models/complecs/orders';
-import ProgramModel from '../../models/complecs/program';
-import DatetoString from '../../helpers/dataToSting';
-import DishModel from '../../models/basic/dish';
-import ProductModel from '../../models/basic/product';
-import DayModel from '../../models/basic/day';
-import DaysQueryModel from '../../models/complecs/daysQuery';
-
-import getCalForPrograms  from '../../helpers/calWorker/getCalForPrograms';
-import getDishParams from '../../helpers/calWorker/helpers/getDishParams';
-
+import { DaysQueryModel, DayModel, ProductModel, DishModel, ProgramModel, OrderModel } from '../../models'
+import { getDateOf, getCalForPrograms, getDishParams, DatetoString } from '../../helpers'
 
 class WorkDataControler {
 	index(req, res) {
@@ -31,7 +22,6 @@ class WorkDataControler {
 	        }
 	    }).sort('date').exec(function(err, days) {
 			if (err) throw err;
-			console.log(days)
 			OrderModel.find({"cart.days": {
 				"$gte": dataTomorow, 
 				"$lt": dataEnd}})
@@ -39,7 +29,6 @@ class WorkDataControler {
 		        path: 'cart.program'
 	    	}).exec(function(err, orders) {
 				if (err) throw err;
-				console.log(orders)
 				var programsObj = [];
 				var daysObj = [];
  				for (var order of orders)
@@ -113,7 +102,8 @@ class WorkDataControler {
 				for (var dishToCook of dishsToCook) {
 					var dishObj = { 
 						title: dishToCook.dish.title, 
-						gram: dishToCook.gram, 
+						gram: dishToCook.gram,
+						tehMap: dishToCook.dish.tehMap,
 						count: 0, 
 						products: []}
 					
@@ -189,28 +179,19 @@ class WorkDataControler {
 		   	});
 		});
 
-
-		function getDateOf (days) {
-			var date = new Date();
-			date.setHours(4, 0, 0, 0);
-			date.setDate(date.getDate() + days);
-
-			return date;
-		}
-
-		function checkGanes(item) {
+		const checkGanes = (item) => {
 			if (item.ganes)
 				return item.product.ganes / 100
 			return 1
 		} 
 
-		function checkHot(item) {
+		const checkHot = (item) => {
 			if (item.hot)
 				return (100 - item.product.hot === 0) ? 100 : (100 - item.product.hot)
 			return 100
 		} 
 
-		function checkCold(item) {
+		const checkCold = (item) => {
 			if (item.cold)
 				return (100 - item.product.cold === 0) ? 100 : (100 - item.product.cold)
 			return 100

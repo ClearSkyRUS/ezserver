@@ -1,11 +1,8 @@
-import bot from '../../core/telegram';
-import TlelgramChatModel from '../../models/basic/telegramChats';
+import TelegramSend from '../telegram/sendMessagesToAdmins';
 
 class newOrderController {
 	create(req, res) {
 		var data = req.body;
-
-		TlelgramChatModel.find().exec(function(err, Chats) {
 			var telegramMessage = '';
 			var helloText = '';
 			if (data.action === 'create_order') {
@@ -27,12 +24,10 @@ class newOrderController {
 				telegramMessage += 'Имя: ' + data.name + '\nТелефон: ' + data.phone + '\n';
 			}
 
-			for (var Chat of Chats)
-				bot.sendMessage(Chat.ChatId, '<b>' + helloText + Chat.name + '</b>\n\n' + telegramMessage, {parse_mode : "HTML"});
+			TelegramSend(helloText, telegramMessage);
 
 			var jsonToClient = { succses: true };
 			res.json(jsonToClient);
-		});
 	}
 }
 

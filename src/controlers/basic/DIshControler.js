@@ -2,8 +2,9 @@ import DishModel from '../../models/basic/dish';
 import DishTypeModel from '../../models/basic/dishType';
 import ProductModel from '../../models/basic/product';
 
-import getKeys from '../../helpers/getKeys';
-import getDishsParams from '../../helpers/getDishsParams';
+import { getKeys, getOterDishsParams } from '../../helpers';
+
+
 
 class DishControler {
 

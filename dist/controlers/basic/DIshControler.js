@@ -18,13 +18,7 @@ var _product = require('../../models/basic/product');
 
 var _product2 = _interopRequireDefault(_product);
 
-var _getKeys = require('../../helpers/getKeys');
-
-var _getKeys2 = _interopRequireDefault(_getKeys);
-
-var _getDishsParams = require('../../helpers/getDishsParams');
-
-var _getDishsParams2 = _interopRequireDefault(_getDishsParams);
+var _helpers = require('../../helpers');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -40,13 +34,13 @@ var DishControler = function () {
 		value: function index(req, res) {
 			_dish2.default.find().populate('type productslist.product').exec(function (err, dishs) {
 				if (err) return res.send(err);
-				var dishsObj = (0, _getDishsParams2.default)(dishs);
+				var dishsObj = getDishsParams(dishs);
 				_dishType2.default.find().exec(function (err, dishTypes) {
 					if (err) return res.send(err);
 
 					_product2.default.find().exec(function (err, products) {
 						if (err) return res.send(err);
-						var productsObj = (0, _getKeys2.default)(products, 'title');
+						var productsObj = (0, _helpers.getKeys)(products, 'title');
 						var response = {
 							types: dishTypes,
 							dishs: dishsObj,

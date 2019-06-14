@@ -1,6 +1,6 @@
 import TelegramBot from 'node-telegram-bot-api';
+import config from '../config'
 
-var token = '828677282:AAHZeJKKIbuSgOX56dnCx_IWsV7VWsuUzWo';
-var bot = new TelegramBot(token, {polling: true});
+const bot = new TelegramBot(config.telegramToken, {polling: true});
 
 export default bot;

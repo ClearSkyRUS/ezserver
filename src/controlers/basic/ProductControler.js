@@ -9,6 +9,8 @@ class ProductControler {
 				return res.send(err);
 
 			res.json(products); 
+			res.end();
+			req.destroy();
 		});
 	}
 
@@ -31,6 +33,8 @@ class ProductControler {
 
 		product.save().then(() => {
 			res.send({ status: "ok" });
+			res.end();
+			req.destroy();
 		});
 	}
 
@@ -43,6 +47,8 @@ class ProductControler {
 			if (err)
 				return res.send(err);
 			res.json({ status: "updated" });
+			res.end();
+			req.destroy();
 		});
 	}
 
@@ -52,6 +58,8 @@ class ProductControler {
 				return res.json({ status: "deleted" });
 
 			res.json({ status: "error" });
+			res.end();
+			req.destroy();
 		});
 	}
 }

@@ -70,6 +70,8 @@ var OrderControler = function () {
 							"programs": (0, _helpers.getKeys)(programs, 'title'),
 							"clients": clients
 						});
+						res.end();
+						req.destroy();
 					});
 				});
 			});
@@ -91,6 +93,8 @@ var OrderControler = function () {
 
 			Order.save().then(function () {
 				res.send({ status: "ok" });
+				res.end();
+				req.destroy();
 			});
 		}
 	}, {
@@ -102,6 +106,8 @@ var OrderControler = function () {
 			_orders2.default.findByIdAndUpdate(req.params.id, { $set: data }, function (err) {
 				if (err) return res.send(err);
 				res.json({ status: "updated" });
+				res.end();
+				req.destroy();
 			});
 		}
 	}, {
@@ -111,6 +117,8 @@ var OrderControler = function () {
 				if (Order) return res.json({ status: "deleted" });
 
 				res.json({ status: "error" });
+				res.end();
+				req.destroy();
 			});
 		}
 	}]);

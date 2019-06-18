@@ -34,6 +34,8 @@ class ProgramControler {
 					"settings": settings
 				}
 				res.json(jsonObj);
+				res.end();
+				req.destroy();
 			});
 		});
 	}
@@ -51,6 +53,8 @@ class ProgramControler {
 
 		program.save().then(() => {
 			res.send({ status: "ok" });
+			res.end();
+			req.destroy();
 		});
 	}
 
@@ -61,6 +65,8 @@ class ProgramControler {
 			if (err)
 				return res.send(err);
 			res.json({ status: "updated" });
+			res.end();
+					req.destroy();
 		});
 	}
 
@@ -70,6 +76,8 @@ class ProgramControler {
 				return res.json({ status: "deleted" });
 
 			res.json({ status: "error" });
+			res.end();
+			req.destroy();
 		});
 	}
 }

@@ -47,6 +47,8 @@ var DishControler = function () {
 							products: productsObj
 						};
 						res.json(response);
+						res.end();
+						req.destroy();
 					});
 				});
 			});

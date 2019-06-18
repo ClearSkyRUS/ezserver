@@ -509,6 +509,8 @@ var WorkDataControler = function () {
 								days: daysMas
 							}
 						});
+						res.end();
+						req.destroy();
 					});
 				});
 			});

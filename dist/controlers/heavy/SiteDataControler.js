@@ -210,6 +210,8 @@ var SiteDataControler = function () {
 					}
 
 					res.json(jsonToClient);
+					res.end();
+					req.destroy();
 				});
 			});
 		}

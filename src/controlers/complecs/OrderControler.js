@@ -29,6 +29,8 @@ class OrderControler {
 						"programs": getKeys(programs, 'title'),
 						"clients": clients
 					});
+					res.end();
+					req.destroy();
 				});
 			});
 		});
@@ -49,6 +51,8 @@ class OrderControler {
 
 		Order.save().then(() => {
 			res.send({ status: "ok" });
+			res.end();
+			req.destroy();
 		});
 	}
 
@@ -61,6 +65,8 @@ class OrderControler {
 			if (err)
 				return res.send(err);
 			res.json({ status: "updated" });
+			res.end();
+			req.destroy();
 		});
 	}
 
@@ -70,6 +76,8 @@ class OrderControler {
 				return res.json({ status: "deleted" });
 
 			res.json({ status: "error" });
+			res.end();
+			req.destroy();
 		});
 	}
 }

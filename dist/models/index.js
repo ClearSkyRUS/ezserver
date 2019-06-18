@@ -85,4 +85,13 @@ Object.defineProperty(exports, 'ProgramModel', {
   }
 });
 
+var _daily = require('./stamps/daily');
+
+Object.defineProperty(exports, 'DailyModel', {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_daily).default;
+  }
+});
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

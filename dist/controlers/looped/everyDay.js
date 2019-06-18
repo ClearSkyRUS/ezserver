@@ -12,13 +12,7 @@ var _models = require('../../models');
 
 var _helpers = require('../../helpers');
 
-var _OrderControler = require('../complecs/OrderControler');
-
-var _OrderControler2 = _interopRequireDefault(_OrderControler);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Order = new _OrderControler2.default();
 
 var everyDayAction = function everyDayAction() {
 	var messageData = '';
@@ -42,7 +36,7 @@ var everyDayAction = function everyDayAction() {
 		_models.OrderModel.find({ "cart.days": {
 				"$gte": data,
 				"$lt": dataEnd } }).populate({
-			path: 'cart.program'
+			path: 'cart.program client'
 		}).exec(function (err, orders) {
 			if (err) throw err;
 			var programsObj = [];
@@ -98,8 +92,72 @@ var everyDayAction = function everyDayAction() {
 			}
 
 			programsObj = (0, _helpers.getCalForPrograms)(programsObj, daysObj);
-			console.log(programsObj);
-			(0, _sendMessagesToAdmins2.default)('Новый день, ', 'Данные за вчера: \n');
+			messageData += 'Заказов было на сегодня: ' + orders.length + ' \n';
+			var sum = 0;
+			var get = 0;
+			var endedOrders = 0;
+			var bonusesTotal = 0;
+
+			var _loop = function _loop(_order) {
+				sum += programsObj.find(function (x) {
+					return x._id == _order.cart[0].program._id;
+				}).options.find(function (x) {
+					return x.cal == _order.cart[0].option;
+				}).days[0].price;
+				get += (_order.totalprice - _order.bonuses) / _order.cart[0].days.length;
+				if ((0, _helpers.isEnded)(_order, dataEnd)) {
+					_models.OrderModel.findByIdAndUpdate(_order._id, { status: 'Завершен' }, function (err) {
+						if (err) console.log(err);
+					});
+					var bonuses = (_order.totalprice - _order.bonuses) * 0.1;
+					_models.ClientModel.findByIdAndUpdate(_order.client._id, { points: bonuses + _order.client.points }, function (err) {
+						if (err) console.log(err);
+					});
+					bonusesTotal += bonuses;
+					endedOrders++;
+				}
+			};
+
+			var _iteratorNormalCompletion3 = true;
+			var _didIteratorError3 = false;
+			var _iteratorError3 = undefined;
+
+			try {
+				for (var _iterator3 = orders[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+					var _order = _step3.value;
+
+					_loop(_order);
+				}
+			} catch (err) {
+				_didIteratorError3 = true;
+				_iteratorError3 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion3 && _iterator3.return) {
+						_iterator3.return();
+					}
+				} finally {
+					if (_didIteratorError3) {
+						throw _iteratorError3;
+					}
+				}
+			}
+
+			messageData += 'Себестоимость продуктов: ' + sum.toFixed(0) + ' Руб \n';
+			messageData += 'Доход: ' + get.toFixed(0) + ' Руб \n';
+			messageData += 'Прибыль: ' + (get - sum).toFixed(0) + ' Руб \n';
+
+			if (endedOrders) messageData += '\n Заказов завершено: ' + endedOrders + '\n' + 'Бонусов начисленно: ' + bonusesTotal + '\n';
+
+			(0, _sendMessagesToAdmins2.default)('Новый день, ', 'Данные за вчера: \n' + messageData);
+
+			var stamp = new _models.DailyModel({
+				"consumption": sum,
+				"income": get,
+				"endedOrders": endedOrders,
+				"bonusesGiven": bonusesTotal
+			});
+			stamp.save();
 		});
 	});
 };

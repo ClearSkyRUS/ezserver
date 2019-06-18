@@ -1,10 +1,8 @@
 import TelegramSend from '../telegram/sendMessagesToAdmins';
 
-import { DaysQueryModel, OrderModel } from '../../models'
-import { getDateOf, getCalForPrograms } from '../../helpers'
+import { DaysQueryModel, OrderModel, ClientModel, DailyModel } from '../../models'
+import { getDateOf, getCalForPrograms, isEnded } from '../../helpers'
 
-import OrderController from '../complecs/OrderControler';
-const Order = new OrderController();
 
 const everyDayAction = () => {
 	let messageData = '';
@@ -31,7 +29,7 @@ const everyDayAction = () => {
 				"$gte": data, 
 				"$lt": dataEnd}})
 			.populate({
-		        path: 'cart.program'
+		        path: 'cart.program client'
 	    	}).exec(function(err, orders) {
 				if (err) throw err;
 				var programsObj = [];
@@ -45,8 +43,40 @@ const everyDayAction = () => {
  						daysObj.push(day.day)
 
  				programsObj = getCalForPrograms(programsObj, daysObj);
- 				console.log(programsObj);
- 				TelegramSend('Новый день, ', 'Данные за вчера: \n');
+ 				messageData += 'Заказов было на сегодня: ' + orders.length + ' \n';
+ 				let sum = 0;
+ 				let get = 0;
+ 				let endedOrders = 0;
+ 				let bonusesTotal = 0;
+ 				for (let order of orders) {
+ 					sum += programsObj.find(x => x._id == order.cart[0].program._id).options.find(x => x.cal == order.cart[0].option).days[0].price;
+ 					get += (order.totalprice - order.bonuses)/order.cart[0].days.length;
+ 					if (isEnded(order, dataEnd)) {
+ 						OrderModel.findByIdAndUpdate(order._id, { status: 'Завершен'}, err => {if (err) console.log(err)});
+ 						let bonuses = (order.totalprice - order.bonuses) * 0.1;
+ 						ClientModel.findByIdAndUpdate(order.client._id, { points: bonuses + order.client.points }, err => {if (err) console.log(err)});
+ 						bonusesTotal += bonuses;
+ 						endedOrders++;
+ 					}
+ 				}
+
+ 				messageData += 'Себестоимость продуктов: ' + sum.toFixed(0) + ' Руб \n';
+ 				messageData += 'Доход: ' + get.toFixed(0) + ' Руб \n';
+ 				messageData += 'Прибыль: ' + (get-sum).toFixed(0) + ' Руб \n';
+
+ 				if (endedOrders)
+ 					messageData += '\n Заказов завершено: ' + endedOrders + '\n' +
+ 									'Бонусов начисленно: ' + bonusesTotal + '\n';
+
+ 				TelegramSend('Новый день, ', 'Данные за вчера: \n' + messageData);
+
+ 				const stamp = new DailyModel({
+					"consumption": sum,
+					"income": get,
+					"endedOrders": endedOrders,
+					"bonusesGiven": bonusesTotal
+				});
+				stamp.save();
  		});
 	});
 }

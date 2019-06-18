@@ -7,3 +7,5 @@ export { default as TelegramChatsModel } from './basic/telegramChats';
 export { default as DaysQueryModel } from './complecs/daysQuery';
 export { default as OrderModel } from './complecs/orders';
 export { default as ProgramModel } from './complecs/program';
+
+export { default as DailyModel } from './stamps/daily'

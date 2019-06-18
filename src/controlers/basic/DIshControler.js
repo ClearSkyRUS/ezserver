@@ -12,7 +12,7 @@ class DishControler {
 		DishModel.find().populate('type productslist.product').exec(function(err, dishs) {
 			if (err) 
 				return res.send(err);
-			var dishsObj = getDishsParams(dishs);
+			var dishsObj = getOterDishsParams(dishs);
 			DishTypeModel.find().exec(function(err, dishTypes) {
 				if (err) 
 					return res.send(err);

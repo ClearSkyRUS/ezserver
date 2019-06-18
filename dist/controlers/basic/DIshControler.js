@@ -34,7 +34,7 @@ var DishControler = function () {
 		value: function index(req, res) {
 			_dish2.default.find().populate('type productslist.product').exec(function (err, dishs) {
 				if (err) return res.send(err);
-				var dishsObj = getDishsParams(dishs);
+				var dishsObj = (0, _helpers.getOterDishsParams)(dishs);
 				_dishType2.default.find().exec(function (err, dishTypes) {
 					if (err) return res.send(err);
 

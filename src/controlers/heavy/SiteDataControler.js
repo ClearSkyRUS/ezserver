@@ -90,8 +90,6 @@ class SiteDataControler {
 					jsonToClient.programs.push(programItem)
 				}
 				res.json(jsonToClient);
-				res.end();
-				req.destroy();
 			});
 		});
 	}

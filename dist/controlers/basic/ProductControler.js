@@ -27,8 +27,6 @@ var ProductControler = function () {
 				if (err) return res.send(err);
 
 				res.json(products);
-				res.end();
-				req.destroy();
 			});
 		}
 	}, {
@@ -51,8 +49,6 @@ var ProductControler = function () {
 
 			product.save().then(function () {
 				res.send({ status: "ok" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}, {
@@ -64,8 +60,6 @@ var ProductControler = function () {
 			_product2.default.findByIdAndUpdate(req.params.id, { $set: data }, function (err) {
 				if (err) return res.send(err);
 				res.json({ status: "updated" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}, {
@@ -75,8 +69,6 @@ var ProductControler = function () {
 				if (product) return res.json({ status: "deleted" });
 
 				res.json({ status: "error" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}]);

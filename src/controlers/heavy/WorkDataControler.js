@@ -175,8 +175,6 @@ class WorkDataControler {
 							days: daysMas
 						}
 					});
-					res.end();
-					req.destroy();
 				});
 		   	});
 		});

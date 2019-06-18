@@ -8,8 +8,6 @@ class DishTypesControler {
 				return res.send(err);
 
 			res.json(dishTypes); 
-			res.end();
-			req.destroy();
 		});
 	}
 
@@ -26,8 +24,6 @@ class DishTypesControler {
  
 		dishType.save().then(() => {
 			res.send({ status: "ok" });
-			res.end();
-			req.destroy();
 		});
 	}
 
@@ -37,8 +33,6 @@ class DishTypesControler {
 			if (err)
 				return res.send(err);
 			res.json({ status: "updated" });
-			res.end();
-			req.destroy();
 		});
 	}
 
@@ -48,8 +42,6 @@ class DishTypesControler {
 				return res.json({ status: "deleted" });
 
 			res.json({ status: "error" });
-			res.end();
-			req.destroy();
 		});
 	}
 }

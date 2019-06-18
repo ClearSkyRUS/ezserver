@@ -90,8 +90,6 @@ var ProgramControler = function () {
 						"settings": settings
 					};
 					res.json(jsonObj);
-					res.end();
-					req.destroy();
 				});
 			});
 		}
@@ -110,8 +108,6 @@ var ProgramControler = function () {
 
 			program.save().then(function () {
 				res.send({ status: "ok" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}, {
@@ -122,8 +118,6 @@ var ProgramControler = function () {
 			_models.ProgramModel.findByIdAndUpdate(req.params.id, { $set: data }, function (err) {
 				if (err) return res.send(err);
 				res.json({ status: "updated" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}, {
@@ -133,8 +127,6 @@ var ProgramControler = function () {
 				if (program) return res.json({ status: "deleted" });
 
 				res.json({ status: "error" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}]);

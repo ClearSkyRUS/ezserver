@@ -26,8 +26,6 @@ var DishTypesControler = function () {
 				if (err) return res.send(err);
 
 				res.json(dishTypes);
-				res.end();
-				req.destroy();
 			});
 		}
 	}, {
@@ -45,8 +43,6 @@ var DishTypesControler = function () {
 
 			dishType.save().then(function () {
 				res.send({ status: "ok" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}, {
@@ -56,8 +52,6 @@ var DishTypesControler = function () {
 			_dishType2.default.findByIdAndUpdate(req.params.id, { $set: data }, function (err) {
 				if (err) return res.send(err);
 				res.json({ status: "updated" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}, {
@@ -67,8 +61,6 @@ var DishTypesControler = function () {
 				if (dishType) return res.json({ status: "deleted" });
 
 				res.json({ status: "error" });
-				res.end();
-				req.destroy();
 			});
 		}
 	}]);

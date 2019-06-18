@@ -27,8 +27,6 @@ class DishControler {
 						products: productsObj
 					}
 					res.json(response); 
-					res.end();
-					req.destroy();
 				});
 			});
 		});

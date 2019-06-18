@@ -30,7 +30,7 @@ const Query = new daysQuery();
 import everyDayAction from './controlers/looped/everyDay';
 
 ontime({
-    cycle: [ '11:22:00' ]
+    cycle: [ '12:00:00' ]
 }, function (ot) {
     everyDayAction();
     ot.done();

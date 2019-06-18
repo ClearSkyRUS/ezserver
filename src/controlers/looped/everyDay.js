@@ -3,6 +3,8 @@ import TelegramSend from '../telegram/sendMessagesToAdmins';
 import { DaysQueryModel, OrderModel, ClientModel, DailyModel } from '../../models'
 import { getDateOf, getCalForPrograms, isEnded } from '../../helpers'
 
+import { getQuote } from '../../optional'
+
 
 const everyDayAction = () => {
 	let messageData = '';
@@ -68,7 +70,6 @@ const everyDayAction = () => {
  					messageData += '\n Заказов завершено: ' + endedOrders + '\n' +
  									'Бонусов начисленно: ' + bonusesTotal + '\n';
 
- 				TelegramSend('Новый день, ', 'Данные за вчера: \n' + messageData);
 
  				const stamp = new DailyModel({
 					"consumption": sum,
@@ -77,6 +78,19 @@ const everyDayAction = () => {
 					"bonusesGiven": bonusesTotal
 				});
 				stamp.save();
+
+				getQuote(response => {
+					let qute = '';
+					if (response.errno)
+						qute = '\n Печаль, но цитатка не подгрузилась(';
+					else {
+						qute = '\n ' + response.quoteText;
+						if (response.quoteAuthor)
+							qute += '\n     ' + response.quoteAuthor
+					}
+
+					TelegramSend('Новый день, ', 'Данные за вчера: \n' + messageData + qute);
+				})
  		});
 	});
 }

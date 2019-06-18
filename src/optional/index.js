@@ -1,0 +1,1 @@
+export { default as getQuote } from './quote/getQuote'

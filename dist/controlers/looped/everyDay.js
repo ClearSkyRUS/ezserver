@@ -12,6 +12,8 @@ var _models = require('../../models');
 
 var _helpers = require('../../helpers');
 
+var _optional = require('../../optional');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var everyDayAction = function everyDayAction() {
@@ -149,8 +151,6 @@ var everyDayAction = function everyDayAction() {
 
 			if (endedOrders) messageData += '\n Заказов завершено: ' + endedOrders + '\n' + 'Бонусов начисленно: ' + bonusesTotal + '\n';
 
-			(0, _sendMessagesToAdmins2.default)('Новый день, ', 'Данные за вчера: \n' + messageData);
-
 			var stamp = new _models.DailyModel({
 				"consumption": sum,
 				"income": get,
@@ -158,6 +158,16 @@ var everyDayAction = function everyDayAction() {
 				"bonusesGiven": bonusesTotal
 			});
 			stamp.save();
+
+			(0, _optional.getQuote)(function (response) {
+				var qute = '';
+				if (response.errno) qute = '\n Печаль, но цитатка не подгрузилась(';else {
+					qute = '\n ' + response.quoteText;
+					if (response.quoteAuthor) qute += '\n     ' + response.quoteAuthor;
+				}
+
+				(0, _sendMessagesToAdmins2.default)('Новый день, ', 'Данные за вчера: \n' + messageData + qute);
+			});
 		});
 	});
 };

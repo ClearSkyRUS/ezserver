@@ -72,7 +72,7 @@ var Query = new _daysQuery2.default();
 
 
 (0, _ontime2.default)({
-    cycle: ['12:00:00']
+    cycle: ['11:22:00']
 }, function (ot) {
     (0, _everyDay2.default)();
     ot.done();

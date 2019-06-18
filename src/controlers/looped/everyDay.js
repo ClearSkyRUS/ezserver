@@ -1,7 +1,7 @@
 import TelegramSend from '../telegram/sendMessagesToAdmins';
 
 import { DaysQueryModel, OrderModel } from '../../models'
-import { getDateOf } from '../../helpers'
+import { getDateOf, getCalForPrograms } from '../../helpers'
 
 import OrderController from '../complecs/OrderControler';
 const Order = new OrderController();

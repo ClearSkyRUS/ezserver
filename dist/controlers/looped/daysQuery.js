@@ -67,12 +67,12 @@ var DaysQueryControler = function () {
 						data.setDate(data.getDate() + 1);
 						var weakNow = data.getWeek();
 						var activeWeak = DaysQuerys[0].date.getWeek();
-						console.log(weakNow + " " + activeWeak);
+
 						if (weakNow > activeWeak) {
-							console.log('Замена недели');
+
 							var monday = getMonday(data);
 							monday.setDate(data.getDate() + 6);
-							console.log('Понедельник: ' + monday);
+
 							var dayNumber = getLastDay(DaysQuerys[13].day, Days);
 							dayNumber++;
 							if (dayNumber === Days.length) dayNumber = 0;

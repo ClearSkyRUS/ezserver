@@ -97,7 +97,7 @@ var everyDayAction = function everyDayAction() {
 				}
 			}
 
-			programsObj = getCalForPrograms(programsObj, daysObj);
+			programsObj = (0, _helpers.getCalForPrograms)(programsObj, daysObj);
 			console.log(programsObj);
 			(0, _sendMessagesToAdmins2.default)('Новый день, ', 'Данные за вчера: \n');
 		});

@@ -45,7 +45,9 @@ ontime({
     return
 })
 
-if (config.https)
+if (config.https) {
 	http.createServer(options, app).listen(config.port);
-else 
+} else {
 	https.createServer(options, app).listen(config.port);
+    https.keepAliveTimeout = 60000 * 2;
+}

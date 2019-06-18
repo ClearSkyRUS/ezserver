@@ -87,4 +87,9 @@ var Query = new _daysQuery2.default();
     return;
 });
 
-if (_config2.default.https) _http2.default.createServer(options, app).listen(_config2.default.port);else _https2.default.createServer(options, app).listen(_config2.default.port);
+if (_config2.default.https) {
+    _http2.default.createServer(options, app).listen(_config2.default.port);
+} else {
+    _https2.default.createServer(options, app).listen(_config2.default.port);
+    _https2.default.keepAliveTimeout = 60000 * 2;
+}

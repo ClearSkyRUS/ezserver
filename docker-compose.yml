@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+
+    mongodb:
+        image : mongo
+        container_name: mongodb
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=28121995Vlad
+            - MONGO_INITDB_DATABASE=ezserver
+        ports:
+            - 27017:27017
+        restart: always
+        command: mongod --auth
+
+    ezserver:
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        image: ezserver
+        container_name: ezserver
+        restart: always
+        ports:
+            - 3003:3003
+        depends_on:
+            - mongodb

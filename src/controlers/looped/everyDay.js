@@ -89,7 +89,7 @@ const everyDayAction = () => {
 							qute += '\n     ' + response.quoteAuthor
 					}
 
-					TelegramSend('Новый день, ', 'Данные за вчера: \n' + messageData + qute);
+					// TelegramSend('Новый день, ', 'Данные за вчера: \n' + messageData + qute);
 				})
  		});
 	});
